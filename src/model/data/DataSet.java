@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import model.umbral.*;
 
 /**
@@ -61,6 +59,12 @@ public class DataSet {
     public void actGini(String target) {
         for (String key : gini.keySet()) {
             gini.put(key, calculateGini(key, target));
+        }
+    }
+
+    public void inicializaGini() {
+        for (String key : gini.keySet()) {
+            gini.put(key, 0.0);
         }
     }
 
@@ -115,28 +119,31 @@ public class DataSet {
         return giniValue;
     }
 
-    public ArrayList<DataSet> segmentarData(String atributo) {
+    public ArrayList<DataSet> segmentarData(String atributo, DataSet principal) {
         ArrayList<DataSet> data = new ArrayList<>();
         DataSet datosP = new DataSet();
         DataSet datosN = new DataSet();
         String atributeMin = null;
-
-        DataSet dataset = new DataSet();
-        dataset.loadData("resources/pacientes.csv");
-        dataset.actGini(atributo);
-        double min = Collections.min(dataset.gini.values());
-        //- Obtiene atributo con menor gini
-        for (Map.Entry<String, Double> entry : dataset.getGini().entrySet()) {
+        // - Actualiza gini segun el parametro atributo
+        principal.actGini(atributo);
+        double min = Collections.min(gini.values());
+        //- Obtiene atributo con menor gini //Dudas de esto:(
+        for (Map.Entry<String, Double> entry : principal.getGini().entrySet()) {
             if (entry.getValue() == min) {
                 atributeMin = entry.getKey();
             }
-        }
-        //- Crea datosP y datosN
-        //- Retorna datosP y datosN (en una estructura: lista o arreglo). 
+        }      
+        //- Crea datosP y datosN. Retorna datosP y datosN (en una estructura: lista o arreglo). 
+        //Si el parametro con menor gini es el mismo que el atributo recibido como parametro entonces se retorna null 
         if (atributeMin.equals(atributo)) {
             return null;
         } else {
-            //La parte de segmentar
+            //datos positivos
+            if (2>2) {
+                datosP.inicializaGini();
+            } else {
+                datosN.inicializaGini();
+            }
             data.add(datosP);
             data.add(datosN);
         }
