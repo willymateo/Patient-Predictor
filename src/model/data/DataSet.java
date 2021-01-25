@@ -119,35 +119,66 @@ public class DataSet {
         return giniValue;
     }
 
-    public ArrayList<DataSet> segmentarData(String atributo, DataSet principal) {
-        ArrayList<DataSet> data = new ArrayList<>();
+   public ArrayList<DataSet> segmentarData(String atributo){
+        ArrayList<DataSet> listaDatos = new ArrayList<>();
         DataSet datosP = new DataSet();
         DataSet datosN = new DataSet();
-        String atributeMin = null;
-        // - Actualiza gini segun el parametro atributo
-        principal.actGini(atributo);
-        double min = Collections.min(gini.values());
-        //- Obtiene atributo con menor gini //Dudas de esto:(
-        for (Map.Entry<String, Double> entry : principal.getGini().entrySet()) {
-            if (entry.getValue() == min) {
-                atributeMin = entry.getKey();
+        String atributoMenorGini = "";
+        double menorGini = Double.MAX_VALUE;
+        
+        this.actualizarGini(atributo);
+        for (Map.Entry<String, Double> giniAtributo : gini.entrySet()){
+            if(giniAtributo.getValue()<menorGini){
+                atributoMenorGini = giniAtributo.getKey();
+                menorGini = giniAtributo.getValue();
             }
-        }      
-        //- Crea datosP y datosN. Retorna datosP y datosN (en una estructura: lista o arreglo). 
-        //Si el parametro con menor gini es el mismo que el atributo recibido como parametro entonces se retorna null 
-        if (atributeMin.equals(atributo)) {
-            return null;
-        } else {
-            //datos positivos
-            if (2>2) {
-                datosP.inicializaGini();
-            } else {
-                datosN.inicializaGini();
-            }
-            data.add(datosP);
-            data.add(datosN);
         }
-        return data;
+        if(atributoMenorGini.equals(atributo)){
+            return null;
+        }
+        System.out.println("Atributo menor gini es "+atributoMenorGini+" y tiene un gini de "+menorGini);
+        
+        ArrayList<Boolean> listaSegmentar = dataset.remove(atributoMenorGini); //Remuevo el atributo del dataset original
+        gini.remove(atributoMenorGini); // Remuevo el gini del dataset original
+        
+        /*Creacion de nuevos data sets sin el atributo con el menor gini*/
+        for (Map.Entry<String, ArrayList<Boolean>> mapaDatos : dataset.entrySet()){
+            datosP.dataset.put(mapaDatos.getKey(), new ArrayList<>());
+            datosN.dataset.put(mapaDatos.getKey(), new ArrayList<>());
+            
+            datosP.gini.put(mapaDatos.getKey(), 0.0);
+            datosP.gini.put(mapaDatos.getKey(), 0.0);
+        }
+        
+        int contador = 0; //Variable para controlar el acceso al dataset
+        for(Boolean valor: listaSegmentar){
+            if(valor==true){
+                for (Map.Entry<String, ArrayList<Boolean>> mapaDatos : dataset.entrySet()){
+                    ArrayList<Boolean> listaAgregar = datosP.dataset.get(mapaDatos.getKey());
+                    listaAgregar.add(mapaDatos.getValue().get(contador));
+                    datosP.dataset.put(mapaDatos.getKey(), listaAgregar);
+                }
+            } else{
+                for (Map.Entry<String, ArrayList<Boolean>> mapaDatos : dataset.entrySet()){
+                    ArrayList<Boolean> listaAgregar = datosN.dataset.get(mapaDatos.getKey());
+                    listaAgregar.add(mapaDatos.getValue().get(contador));
+                    datosN.dataset.put(mapaDatos.getKey(), listaAgregar);
+                }
+            }
+            contador++;
+        }
+        
+        // Pruebas para apreciar la impresión de valores
+        System.out.println("datosP");
+        for (Map.Entry<String, ArrayList<Boolean>> entry : datosP.getDataset().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue() +" Size = "+ entry.getValue().size());
+        System.out.println("DatosN");
+        for (Map.Entry<String, ArrayList<Boolean>> entry : datosN.getDataset().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue() +" Size = "+ entry.getValue().size());
+        
+        listaDatos.add(datosP);
+        listaDatos.add(datosN);
+        return listaDatos;
     }
 
     public Map<String, ArrayList<Boolean>> getDataset() {
