@@ -56,10 +56,10 @@ public class DataSet {
         }
     }
 
-    public void actGini(String target) {
-        for (String key : gini.keySet()) {
-            gini.put(key, calculateGini(key, target));
-        }
+    public void actualizarGini(String atributo){
+        for (Map.Entry<String, ArrayList<Boolean>> informacionMapa : dataset.entrySet()){
+            gini.put(informacionMapa.getKey(), obtenerGini(informacionMapa.getKey(),atributo));
+        }    
     }
 
     public void inicializaGini() {
@@ -74,49 +74,52 @@ public class DataSet {
         dataset.get(key).add(converted);
     }
 
-    private double calculateGini(String attribute, String target) {
-        ArrayList<Boolean> primerAtributo = dataset.get(attribute);
-        ArrayList<Boolean> segundoAtributo = dataset.get(target);
+    private Double obtenerGini(String atributoA, String atributoB){
+        ArrayList<Boolean> primerAtributo = dataset.get(atributoA);
+        ArrayList<Boolean> segundoAtributo = dataset.get(atributoB);
+        
         int contadorSiPrimeroSiSegundo = 0;
         int contadorSiPrimeroNoSegundo = 0;
         int contadorNoPrimeroSiSegundo = 0;
         int contadorNoPrimeroNoSegundo = 0;
         int contadorSi = 0;
         int contadorNo = 0;
-        double giniValue;
-
+        
         /* En caso que el atributo y el target sean el mismo*/
-        if (attribute.equals(target)) {
-            for (int i = 0; i < primerAtributo.size(); i++) {
-                if (primerAtributo.get(i) == true) {
+        if(atributoA.equals(atributoB)){
+            for(int i=0; i<primerAtributo.size(); i++){
+                if(primerAtributo.get(i)==true){
                     contadorSi++;
-                } else {
+                } else{
                     contadorNo++;
                 }
             }
-            giniValue = 1 - Math.pow(((double) contadorSi / primerAtributo.size()), 2) - Math.pow(((double) contadorNo / primerAtributo.size()), 2);
-        } else {
-            /*El atributo y el target son diferentes*/
-            for (int i = 0; i < primerAtributo.size(); i++) {
-                if (primerAtributo.get(i) == true && segundoAtributo.get(i) == true) {
-                    contadorSiPrimeroSiSegundo++;
-                    contadorSi++;
-                } else if (primerAtributo.get(i) == true && segundoAtributo.get(i) == false) {
-                    contadorSiPrimeroNoSegundo++;
-                    contadorSi++;
-                } else if (primerAtributo.get(i) == false && segundoAtributo.get(i) == true) {
-                    contadorNoPrimeroSiSegundo++;
-                    contadorNo++;
-                } else {
-                    contadorNoPrimeroNoSegundo++;
-                    contadorNo++;
-                }
-            }
-            double giniSiPrimero = 1 - Math.pow(((double) contadorSiPrimeroSiSegundo / contadorSi), 2) - Math.pow(((double) contadorSiPrimeroNoSegundo / contadorSi), 2);
-            double giniNoPrimero = 1 - Math.pow(((double) contadorNoPrimeroSiSegundo / contadorNo), 2) - Math.pow(((double) contadorNoPrimeroNoSegundo / contadorNo), 2);
-            giniValue = ((double) contadorSi / primerAtributo.size()) * giniSiPrimero + ((double) contadorNo / primerAtributo.size()) * giniNoPrimero;
+            double giniFinal = 1 - Math.pow(((double)contadorSi/primerAtributo.size()),2) - Math.pow(((double)contadorNo/primerAtributo.size()),2);
+            return giniFinal;
         }
-        return giniValue;
+        
+        /*El atributo y el target son diferentes*/
+        for(int i=0; i<primerAtributo.size(); i++){
+            if(primerAtributo.get(i)==true && segundoAtributo.get(i)==true){
+                contadorSiPrimeroSiSegundo++;
+                contadorSi++;
+            } else if(primerAtributo.get(i)==true && segundoAtributo.get(i)==false){
+                contadorSiPrimeroNoSegundo++;
+                contadorSi++;
+            } else if(primerAtributo.get(i)==false && segundoAtributo.get(i)==true){
+                contadorNoPrimeroSiSegundo++;
+                contadorNo++;
+            }else{
+                contadorNoPrimeroNoSegundo++;
+                contadorNo++;
+            }
+        }
+        double giniSiPrimero = 1 - Math.pow(((double)contadorSiPrimeroSiSegundo/contadorSi),2) - Math.pow(((double)contadorSiPrimeroNoSegundo/contadorSi),2);
+        double giniNoPrimero = 1 - Math.pow(((double)contadorNoPrimeroSiSegundo/contadorNo),2) - Math.pow(((double)contadorNoPrimeroNoSegundo/contadorNo),2);
+        
+        double giniFinal = ((double)contadorSi/primerAtributo.size())*giniSiPrimero + ((double)contadorNo/primerAtributo.size())*giniNoPrimero;
+        return giniFinal;
+        
     }
 
    public ArrayList<DataSet> segmentarData(String atributo){
