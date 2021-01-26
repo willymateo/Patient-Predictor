@@ -10,16 +10,14 @@ package model.data;
  * @author USER
  */
 public class ArbolDecision {
-
+    private Node root;
+    
     private class Node {
-
         private DataSet datosPacientes;
         private String atributoDominante;
         private String decision;
         private Node left, right, parent;
         
-        
-
         public DataSet getDatosPacientes() {
             return datosPacientes;
         }
@@ -67,7 +65,5 @@ public class ArbolDecision {
         public void setParent(Node parent) {
             this.parent = parent;
         }
-
-        
     }
 }
