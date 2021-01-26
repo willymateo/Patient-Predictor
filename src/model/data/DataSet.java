@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import model.umbral.*;
 
@@ -110,6 +111,46 @@ public class DataSet {
         }
         return giniValue;
     }
+    
+    public DataSet[] segmentarData(String attribute) {
+        actGini(attribute);
+        String attribMinGini = getMinGini();
+        System.out.println("Atributo min gini: " +attribMinGini);
+        DataSet pos = getDataByValue(attribMinGini, true);
+        DataSet neg = getDataByValue(attribMinGini, false);
+        DataSet[] result = {pos, neg};
+        return result;
+    }
+    
+    private String getMinGini() {
+        double min = Double.MAX_VALUE;
+        String minAttribute = "";
+        for (String key : gini.keySet()) {
+            double actGini = gini.get(key);
+            if (actGini < min) {
+                min = actGini;
+                minAttribute = key;
+            }
+        }
+        return minAttribute;
+    }
+    
+    private DataSet getDataByValue(String attribute, boolean value) {
+        DataSet newDataSet = new DataSet();
+        List<Boolean> listByAttribute = dataset.get(attribute);
+        for (String key : gini.keySet()) {
+            if (!key.equals(attribute)) {
+                newDataSet.dataset.put(key, new ArrayList<>());
+                gini.put(key, 0.0);
+                for (int i = 0; i < listByAttribute.size(); i++) {
+                    if (listByAttribute.get(i) == value) {
+                        newDataSet.dataset.get(key).add(dataset.get(key).get(i));
+                    }
+                }
+            }
+        }
+        return newDataSet;
+    } 
     
     public Map<String, ArrayList<Boolean>> getDataset() {
         return dataset;

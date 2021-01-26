@@ -24,6 +24,25 @@ public class TestReadCsv {
         
         System.out.println("/**Gini**/");
         for (Map.Entry<String, Double> entry : dataset.getGini().entrySet())  
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()); 
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        
+        DataSet [] x = dataset.segmentarData("DEATH_EVENT");
+        System.out.println("Positivos");
+        System.out.println("/**Lista de pacientes**/");
+        for (Map.Entry<String, ArrayList<Boolean>> entry : x[0].getDataset().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue() +" Size = "+ entry.getValue().size());
+        
+        System.out.println("/**Gini**/");
+        for (Map.Entry<String, Double> entry : x[0].getGini().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        
+        System.out.println("Negativos");
+        System.out.println("/**Lista de pacientes**/");
+        for (Map.Entry<String, ArrayList<Boolean>> entry : x[1].getDataset().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue() +" Size = "+ entry.getValue().size());
+        
+        System.out.println("/**Gini**/");
+        for (Map.Entry<String, Double> entry : x[1].getGini().entrySet())  
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
     }
 }
