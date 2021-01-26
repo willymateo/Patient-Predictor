@@ -16,12 +16,10 @@ public class TestReadCsv {
     public static void main(String[] args) {
         DataSet dataset = new DataSet();
         dataset.loadData("resources/pacientes.csv");
-        dataset.actGini("DEATH_EVENT");
         
         System.out.println("/**Lista de pacientes**/");
         for (Map.Entry<String, ArrayList<Boolean>> entry : dataset.getDataset().entrySet())  
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue() +" Size = "+ entry.getValue().size());
-        
         System.out.println("/**Gini**/");
         for (Map.Entry<String, Double> entry : dataset.getGini().entrySet())  
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
