@@ -115,24 +115,10 @@ public class DataSet {
     public DataSet[] segmentarData(String attribute) {
         actGini(attribute);
         String attribMinGini = getMinGini();
-        System.out.println("Atributo min gini: " +attribMinGini);
         DataSet pos = getDataByValue(attribMinGini, true);
         DataSet neg = getDataByValue(attribMinGini, false);
         DataSet[] result = {pos, neg};
         return result;
-    }
-    
-    private String getMinGini() {
-        double min = Double.MAX_VALUE;
-        String minAttribute = "";
-        for (String key : gini.keySet()) {
-            double actGini = gini.get(key);
-            if (actGini < min) {
-                min = actGini;
-                minAttribute = key;
-            }
-        }
-        return minAttribute;
     }
     
     private DataSet getDataByValue(String attribute, boolean value) {
@@ -150,7 +136,20 @@ public class DataSet {
             }
         }
         return newDataSet;
-    } 
+    }
+    
+    private String getMinGini() {
+        double min = Double.MAX_VALUE;
+        String minAttribute = "";
+        for (String key : gini.keySet()) {
+            double actGini = gini.get(key);
+            if (actGini < min) {
+                min = actGini;
+                minAttribute = key;
+            }
+        }
+        return minAttribute;
+    }
     
     public Map<String, ArrayList<Boolean>> getDataset() {
         return dataset;

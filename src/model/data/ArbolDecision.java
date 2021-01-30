@@ -65,5 +65,9 @@ public class ArbolDecision {
         public void setParent(Node parent) {
             this.parent = parent;
         }
+        
+        public boolean isLeaf(){
+            return left == null && right == null;
+        }
     }
 }
