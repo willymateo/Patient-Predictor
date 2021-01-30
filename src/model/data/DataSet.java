@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,7 @@ public class DataSet {
         return newDataSet;
     }
     
-    private String getMinGini() {
+    public String getMinGini() {
         double min = Double.MAX_VALUE;
         String minAttribute = "";
         for (String key : gini.keySet()) {
@@ -149,6 +150,16 @@ public class DataSet {
             }
         }
         return minAttribute;
+    }
+    
+    public boolean getMostRepeatedValue(String attribute){
+        int countTrue = 0;
+        int countFalse = 0;
+        for (Boolean value : dataset.get(attribute)) {
+            if (value) countTrue++;
+            else countFalse++;
+        }
+        return countTrue > countFalse;
     }
     
     public Map<String, ArrayList<Boolean>> getDataset() {
