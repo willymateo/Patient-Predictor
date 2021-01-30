@@ -42,5 +42,8 @@ public class TestReadCsv {
         System.out.println("/**Gini**/");
         for (Map.Entry<String, Double> entry : x[1].getGini().entrySet())  
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        
+        ArbolDecision decisionTree = new ArbolDecision(dataset);
+        decisionTree.buildDecisionTree("DEATH_EVENT");
     }
 }

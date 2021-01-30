@@ -152,14 +152,17 @@ public class DataSet {
         return minAttribute;
     }
     
-    public boolean getMostRepeatedValue(String attribute){
+    public Map<Boolean, Integer> countValues(String attribute){
+        Map<Boolean, Integer> contador = new HashMap<>();
         int countTrue = 0;
         int countFalse = 0;
         for (Boolean value : dataset.get(attribute)) {
             if (value) countTrue++;
             else countFalse++;
         }
-        return countTrue > countFalse;
+        contador.put(true, countTrue);
+        contador.put(false, countFalse);
+        return contador;
     }
     
     public Map<String, ArrayList<Boolean>> getDataset() {

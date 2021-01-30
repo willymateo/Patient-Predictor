@@ -5,6 +5,8 @@
  */
 package model.data;
 
+import java.util.Map;
+
 /**
  *
  * @author USER
@@ -12,17 +14,33 @@ package model.data;
 public class ArbolDecision {
     private Node root;
 
-    public ArbolDecision(DataSet datosPacientes, String target) {
-        root = new Node(datosPacientes, target);
-        buildDecisionTree(target);
+    public ArbolDecision(DataSet datosPacientes) {
+        root = new Node(datosPacientes);
     }
     
-    private void buildDecisionTree(String target){
-        
+    public void buildDecisionTree(String target){
+        root.calculateDecision(target);
+        root = buildDecisionTree(target, root);
     }
     
-    private void buildDecisionTree(String target, Node p){
-        
+    private Node buildDecisionTree(String target, Node p){
+        if (p != null) {
+            Map<Boolean, Integer> contador = p.datosPacientes.countValues(target);
+            boolean hayMasAtributos = p.datosPacientes.getGini().keySet().size() >= 3;
+            boolean sePuedeSegmentar = contador.get(true) != 0 && contador.get(false) != 0;
+            if (hayMasAtributos && sePuedeSegmentar) {
+                DataSet[] dataSegmentada = p.datosPacientes.segmentarData(target);
+                Node left = new Node(dataSegmentada[0], target);
+                p.left = left;
+                left.parent = p;
+                Node right = new Node(dataSegmentada[1], target);
+                p.right = right;
+                right.parent = p;
+                p = buildDecisionTree(target, p.left);
+                p = buildDecisionTree(target, p.right);
+            }
+        }
+        return p;
     }
     
     /**
@@ -34,19 +52,25 @@ public class ArbolDecision {
     private class Node {
         private final DataSet datosPacientes;
         private final String atributoDominante;
-        private final String decision;
+        private String decision;
         private Node left, right, parent;
 
-        public Node(DataSet datosPacientes, String target) {
+        public Node(DataSet datosPacientes) {
             this.datosPacientes = datosPacientes;
             atributoDominante = datosPacientes.getMinGini();
-            decision = calculateDecision(target);
         }
         
-        private String calculateDecision(String target){
-            if (datosPacientes.getMostRepeatedValue(target))
-                return "SI";
-            return "NO";
+        public Node(DataSet datosPacientes, String target) {
+            this(datosPacientes);
+            calculateDecision(target);
+        }
+        
+        public void calculateDecision(String target){
+            Map<Boolean, Integer> contador = datosPacientes.countValues(target);
+            datosPacientes.actGini(target);
+            if (contador.get(true) > contador.get(false))
+                decision = "SI";
+            else decision = "NO";
         }
         
         public boolean isLeaf(){
